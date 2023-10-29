@@ -1,15 +1,19 @@
 import { chatModel, llm } from "@/lib/openai";
 
-export async function GET() {
-  const text =
-    "What would be a good company name for a company that makes colorful socks?";
+export async function POST(req: Request) {
+  const userMessageFromClient = await req.json();
+
+  if (!userMessageFromClient) {
+    return Response.json({ error: "empty user message" });
+    console.dir("empty user message");
+  }
 
   try {
-    const llmResult = await llm.predict(text);
-    const chatModelResult = await chatModel.predict(text);
-    return Response.json({ message: "sazzad", llmResult, chatModelResult });
+    const llmResult = await llm.predict(userMessageFromClient);
+    const chatModelResult = await chatModel.predict(userMessageFromClient);
+    return Response.json({ llmResult, chatModelResult });
   } catch (error) {
-    console.dir({ errorline12: error });
-    return Response.json({ errorline13: error });
+    console.dir({ error });
+    return Response.json({ error });
   }
 }
