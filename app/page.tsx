@@ -38,7 +38,7 @@ export default function Home() {
   };
 
   return (
-    <main className="text-black">
+    <main className="text-black container">
       <h1 className="font-serif font-bold text-xl text-center">
         LANCHAIN MEMORY
       </h1>
@@ -52,18 +52,23 @@ export default function Home() {
         />
       </div>
 
-      <div className="flex absolute bottom-10 gap-10 left-10">
+      <div className="absolute bottom-10 gap-10 text-center w-full inline-block">
         <input
           type="text"
           name="user_input"
           id="user_input"
           placeholder="chat with openai"
           onChange={(e) => setUserInput(e.target.value)}
-          className="ring-1"
+          className="ring-1 disabled:ring-red-500 mx-10 px-2 py-1"
           disabled={isLoading}
           value={userInput}
         />
-        <button type="submit" onClick={(e) => onSubmit(e)} className="ring-2">
+        <button
+          type="submit"
+          onClick={(e) => onSubmit(e)}
+          className="ring-2 disabled:ring-red-500 rounded-full px-3 py-2"
+          disabled={isLoading}
+        >
           Submit
         </button>
       </div>
@@ -75,7 +80,7 @@ type Conversation = { user: string; message: string; isLoading: boolean };
 type Messages = Conversation[];
 
 const Conversation = (props: { conversation: Conversation }): ReactNode => (
-  <div className="flex gap-4">
+  <div className="flex gap-4 ">
     <p className="font-medium">{props.conversation.user}:</p>
     {props.conversation.isLoading ? (
       <LoadingSpinner />
