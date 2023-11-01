@@ -38,7 +38,7 @@ export default function Home() {
   return (
     <main className='container text-black'>
       <h1 className='text-center font-serif text-xl font-bold'>
-        LANCHAIN MEMORY
+        LANGCHAIN MEMORY
       </h1>
 
       {/* Use it later */}
