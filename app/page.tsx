@@ -16,21 +16,19 @@ export default function Home() {
 
       // Post request failed
       if (res.ok === false) {
-        console.dir({ res })
         return new Error(`Error happened. Error:${res.statusText}`)
       }
 
-      const messageFromServer = await res.json()
+      const { response } = await res.json()
 
       // handle messageFromServer
-      if (typeof messageFromServer.error === 'string') {
-        console.dir(messageFromServer.error)
-        setAiReply(messageFromServer.error)
+      if (typeof response.error === 'string') {
+        setAiReply(response.error)
         setIsLoading(false)
         setUserInput('')
       } else {
         setIsLoading(false)
-        setAiReply(messageFromServer.chatModelResult)
+        setAiReply(response)
         setUserInput('')
       }
     }
