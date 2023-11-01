@@ -1,4 +1,4 @@
-import { chatModel, llm } from '@/lib/openai'
+import { chain } from '@/lib/openai'
 
 export async function POST(req: Request) {
   const userMessageFromClient = await req.json()
@@ -9,9 +9,9 @@ export async function POST(req: Request) {
   }
 
   try {
-    const llmResult = await llm.predict(userMessageFromClient)
-    const chatModelResult = await chatModel.predict(userMessageFromClient)
-    return Response.json({ llmResult, chatModelResult })
+    const res = await chain.call({ input: userMessageFromClient })
+    console.dir(res)
+    return Response.json(res)
   } catch (error) {
     console.dir({ error })
     return Response.json({ error })
