@@ -19,10 +19,14 @@ export default function Home() {
         return new Error(`Error happened. Error:${res.statusText}`)
       }
 
-      const { response } = await res.json()
+      const response = await res.json()
+      console.dir( response )
+
+      // process ai output to show in the frontend
+      // function processAiReply(){}
 
       // handle messageFromServer
-      if (typeof response.error === 'string') {
+      if (typeof response?.error === 'string') {
         setAiReply(response.error)
         setIsLoading(false)
         setUserInput('')
