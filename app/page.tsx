@@ -3,6 +3,7 @@ import { MouseEvent, ReactNode, useState } from 'react'
 
 export default function Home() {
   const [userInput, setUserInput] = useState('')
+  const [messages, setMessages] = useState([])
   const [aiReply, setAiReply] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
@@ -14,23 +15,15 @@ export default function Home() {
         method: 'POST'
       })
 
-      // Post request failed
       if (res.ok === false) {
         return new Error(`Error happened. Error:${res.statusText}`)
       }
 
-      const { response } = await res.json()
-
-      // handle messageFromServer
-      if (typeof response.error === 'string') {
-        setAiReply(response.error)
-        setIsLoading(false)
-        setUserInput('')
-      } else {
-        setIsLoading(false)
-        setAiReply(response)
-        setUserInput('')
-      }
+      const { messages } = await res.json()
+      console.dir({ messages })
+      setMessages(messages)
+      setIsLoading(false)
+      setUserInput('')
     }
     sendUserInputToApi()
   }
@@ -41,13 +34,8 @@ export default function Home() {
         LANGCHAIN MEMORY
       </h1>
 
-      {/* Use it later */}
-      {/* <Messages messages={[{ message: "scdsad", user: "sadsa" }]} /> */}
-
       <div className='flex justify-center p-10'>
-        <Conversation
-          conversation={{ message: aiReply, user: 'AI', isLoading }}
-        />
+        {messages && <Messages messages={messages} />}
       </div>
 
       <div className='absolute bottom-10 inline-block w-full gap-10 text-center'>
@@ -74,24 +62,24 @@ export default function Home() {
   )
 }
 
-type Conversation = { user: string; message: string; isLoading: boolean }
-type Messages = Conversation[]
-
-const Conversation = (props: { conversation: Conversation }): ReactNode => (
+const Conversation = (props: { id: string; content: string }): ReactNode => (
   <div className='flex gap-4 '>
-    <p className='font-medium'>{props.conversation.user}:</p>
-    {props.conversation.isLoading ? (
-      <LoadingSpinner />
-    ) : (
-      <p className='font-serif'>{props.conversation.message}</p>
-    )}
+    <p className='font-medium'>{props.id}:</p>
+
+    <p className='font-serif'>{props.content}</p>
   </div>
 )
 
-const Messages = (props: { messages: Messages }) => (
+const Messages = (props: {
+  messages: { id: string; kwargs: { content: string } }[]
+}) => (
   <div>
     {props.messages.map((conversation, index) => (
-      <Conversation conversation={conversation} key={index} />
+      <Conversation
+        key={index}
+        id={conversation.id[2]}
+        content={conversation?.kwargs.content}
+      />
     ))}
   </div>
 )
