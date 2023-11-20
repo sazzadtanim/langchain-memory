@@ -1,10 +1,13 @@
 'use client'
-import { MouseEvent, ReactNode, useState } from 'react'
+import { historyStore } from '@/store/history'
+import { BaseMessage } from 'langchain/schema'
+import { MouseEvent, ReactNode, useEffect, useState } from 'react'
 
 export default function Home() {
+  const addMessages = historyStore(s => s.addMessages)
+  const messages = historyStore(s => s.messages)
+
   const [userInput, setUserInput] = useState('')
-  const [messages, setMessages] = useState([])
-  const [aiReply, setAiReply] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
   const onSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
@@ -21,12 +24,18 @@ export default function Home() {
 
       const { messages } = await res.json()
       console.dir({ messages })
-      setMessages(messages)
+      addMessages(messages)
       setIsLoading(false)
       setUserInput('')
     }
     sendUserInputToApi()
   }
+
+  const [loaded, setLoaded] = useState(false)
+
+  useEffect(() => {
+    setLoaded(true)
+  }, [messages])
 
   return (
     <main className='container text-black'>
@@ -35,7 +44,7 @@ export default function Home() {
       </h1>
 
       <div className='flex justify-center p-10'>
-        {messages && <Messages messages={messages} />}
+        {loaded && <Messages messages={messages} />}
       </div>
 
       <div className='absolute bottom-10 inline-block w-full gap-10 text-center'>
@@ -62,24 +71,17 @@ export default function Home() {
   )
 }
 
-const Conversation = (props: { id: string; content: string }): ReactNode => (
+const Conversation = (props: Partial<BaseMessage>): ReactNode => (
   <div className='flex gap-4 '>
-    <p className='font-medium'>{props.id}:</p>
-
+    <p className='font-medium'>{props.lc_id}:</p>
     <p className='font-serif'>{props.content}</p>
   </div>
 )
 
-const Messages = (props: {
-  messages: { id: string; kwargs: { content: string } }[]
-}) => (
+const Messages = (props: { messages: BaseMessage[] }) => (
   <div>
     {props.messages.map((conversation, index) => (
-      <Conversation
-        key={index}
-        id={conversation.id[2]}
-        content={conversation?.kwargs.content}
-      />
+      <Conversation {...conversation} />
     ))}
   </div>
 )
